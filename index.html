@@ -178,13 +178,12 @@ function initSupabase() {
 
 <!-- Section 1: Consent -->
 <div class="section active" id="sec1">
-  <h2>📋 实验说明与知情同意书</h2>
+  <h2>实验说明与知情同意书</h2>
   <div class="consent-box">
-    <p>感谢您参与本研究。本实验旨在了解个体的视频观看习惯。实验过程中您需要完成一些问卷填写和视频观看任务。整个过程约<strong>15分钟</strong>。</p>
+    <p>感谢您参与本研究。实验过程中您需要完成一些问卷填写和视频观看任务。</p>
     <p><strong>自愿原则：</strong>本实验完全自愿，您可以在任何时候退出实验，不会产生任何不利后果。</p>
-    <p><strong>数据保密：</strong>实验收集的所有数据仅用于学术研究，采用匿名方式处理，不会泄露您的个人信息。您的数据将直接上传至加密数据库，仅研究者本人可访问。</p>
-    <p><strong>风险说明：</strong>本实验不涉及任何已知风险，所有内容均为中性科普材料。</p>
-    <p><strong>实验要求：</strong>请使用<strong>电脑端</strong>浏览器（Chrome、Edge 或 Firefox）打开本链接，确保网络连接稳定。实验过程中请勿刷新页面。</p>
+    <p><strong>数据保密：</strong>实验收集的所有数据仅用于学术研究，采用匿名方式处理，不会泄露您的个人信息。</p>
+    <p><strong>风险说明：</strong>本实验不涉及任何已知风险。</p>
     <p>如有疑问，请联系研究者获取更多信息。</p>
   </div>
   <div class="form-group">
@@ -198,7 +197,7 @@ function initSupabase() {
 
 <!-- Section 2: Demographics -->
 <div class="section" id="sec2">
-  <h2>📝 基本信息问卷</h2>
+  <h2>基本信息问卷</h2>
   <div class="form-group"><label>年龄</label><input type="number" id="age" min="18" max="30" placeholder="请输入年龄（18-30岁）"></div>
   <div class="form-group"><label>性别</label>
     <div class="radio-group"><label><input type="radio" name="gender" value="男"> 男</label><label><input type="radio" name="gender" value="女"> 女</label></div>
@@ -214,35 +213,32 @@ function initSupabase() {
 
 <!-- Section 3: DGI Scale -->
 <div class="section" id="sec3">
-  <h2>📋 个人特质问卷</h2>
-  <p style="color:#888; margin-bottom:24px;">请您根据您的真实情况予以回答。并根据相关条目从1-5（从"非常不符合"到"非常符合"）中选择，请尽量展示真实情况，您的选择并没有好坏、正确错误之分，本研究采取匿名形式保护您的隐私，非常感谢您的配合！</p>
+  <p style="color:#999; margin-bottom:24px;">请您根据您的真实情况予以回答。并根据相关条目从1-5（从非常不符合到非常符合）中选择，请尽量展示真实情况，您的选择并没有好坏、正确错误之分，本研究采取匿名形式保护您的隐私，非常感谢您的配合！</p>
   <div id="dgiItems"></div>
   <button class="btn" id="btnDGI" onclick="submitDGI()">提交并继续</button>
 </div>
 
 <!-- Section 4: Rest -->
 <div class="section" id="sec4">
-  <h2>☕ 休息时间</h2>
+  <h2>休息时间</h2>
   <p class="rest-message">请稍作休息，接下来将进入视频观看阶段。</p>
-  <div class="rest-timer" id="restTimer">60</div>
-  <p style="text-align:center; color:#666; font-size:16px;">秒后自动进入视频观看</p>
+  <div class="rest-timer" id="restTimer">10</div>
+  <p style="text-align:center; color:#777; font-size:16px;">秒后自动进入视频观看</p>
 </div>
 
 <!-- Section 5: Video Player -->
 <div class="section" id="sec5">
   <div class="instructions">
-    <p>🎬 接下来你将观看一段视频。<strong>请按照你平时最自然、最舒服的方式观看。</strong></p>
-    <p>播放过程中你可以<strong>自由调整播放速度</strong>。视频结束后会有几个简单问题，请认真观看。</p>
-    <p style="font-size:15px; color:#888; margin-top:8px;">💡 提示：可使用键盘 <strong>↑ ↓</strong> 或 <strong>← →</strong> 方向键快速调整播放速度</p>
+    <p>接下来你将观看一段视频。<strong>请按照你平时最自然、最舒服的方式观看。</strong>播放过程中你可以自由调整播放速度。视频结束后会有几个简单问题，请认真观看。</p>
   </div>
   <div class="video-container" id="videoContainer">
-    <video id="mainVideo" playsinline disableRemotePlayback controlsList="nofullscreen noplaybackrate nodownload" crossorigin="anonymous">
+    <video id="mainVideo" playsinline disableRemotePlayback controlsList="nofullscreen noplaybackrate nodownload">
       <source id="videoSource" type="video/mp4">
     </video>
     <div id="playOverlay" onclick="startPlayback()" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.65);cursor:pointer;z-index:10;">
       <div style="text-align:center;color:#fff;">
-        <div style="font-size:64px;margin-bottom:16px;">▶️</div>
-        <div style="font-size:24px;font-weight:500;">点击开始观看</div>
+        <div style="font-size:60px;margin-bottom:16px;">▶</div>
+        <div style="font-size:24px;">点击开始观看</div>
         <div style="font-size:15px;color:#888;margin-top:8px;">观看时可自由调整播放速度</div>
       </div>
     </div>
@@ -267,7 +263,7 @@ function initSupabase() {
 
 <!-- Section 6: Post-Viewing Questionnaire -->
 <div class="section" id="sec6">
-  <h2>📋 观看后问卷</h2>
+  <h2>观看后问卷</h2>
   <div class="form-group"><label>你觉得刚才的视频有趣吗？（1=非常无聊，7=非常有趣）</label>
     <div class="radio-group" id="interestRating"></div>
   </div>
@@ -286,23 +282,18 @@ function initSupabase() {
   <div class="form-group"><label>你之前看过这个视频吗？</label>
     <div class="radio-group"><label><input type="radio" name="seenBefore" value="1"> 看过</label><label><input type="radio" name="seenBefore" value="0"> 没看过</label></div>
   </div>
-  <div class="form-group"><label>请问你觉得本实验的目的是什么？（可选填）</label>
-    <textarea id="guessPurpose" rows="2" placeholder="如不确定可留空"></textarea>
-  </div>
   <button class="btn" id="btnPostQ" onclick="submitPostQuestionnaire()">提交</button>
 </div>
 
 <!-- Section 7: End -->
 <div class="section" id="sec7">
-  <h2>✅ 实验结束</h2>
+  <h2>实验结束</h2>
   <div class="success-msg" id="debriefInfo">
-    <p style="font-size:20px;"><strong>🎉 感谢您的参与！</strong></p>
-    <p>您在视频观看过程中的播放数据已被匿名记录，仅用于学术分析。</p>
-    <p>您的参与编号为：<strong><span id="finalParticipantId"></span></strong></p>
+    <p><strong>感谢您的参与！</strong></p>
+    <p>您在视频观看过程中的播放数据已被匿名记录，仅用于学术分析。再次感谢您的支持和配合！</p>
     <div id="syncStatus" style="margin-top:16px;">
       <span id="statusBadge" class="status-badge" style="display:none;"></span>
     </div>
-    <p style="font-size:15px; color:#888; margin-top:12px;">再次感谢您的支持和配合！如有任何疑问，请联系研究者。</p>
   </div>
   <p id="experimentIdDisplay" style="text-align:center; color:#666; font-size:14px; margin-top:16px;"></p>
 </div>
@@ -608,7 +599,7 @@ function submitDGI() {
 // REST TIMER
 // ============================================================
 function startRestTimer() {
-  let seconds = 60;
+  let seconds = 10;
   const timerEl = document.getElementById('restTimer');
   timerEl.textContent = seconds;
   const interval = setInterval(() => {
@@ -634,7 +625,7 @@ function startPlayback() {
     overlay.innerHTML = '<div style="text-align:center;color:#fff;padding:40px;"><div class="loading-spinner" style="width:40px;height:40px;border-width:3px;"></div><div style="font-size:18px;margin-top:16px;">视频加载中...</div></div>';
     video.addEventListener('canplay', function handler() {
       video.removeEventListener('canplay', handler);
-      overlay.innerHTML = '<div style="text-align:center;color:#fff;"><div style="font-size:64px;margin-bottom:16px;">▶️</div><div style="font-size:24px;font-weight:500;">点击开始观看</div><div style="font-size:15px;color:#888;margin-top:8px;">观看时可自由调整播放速度</div></div>';
+      overlay.innerHTML = '<div style="text-align:center;color:#fff;"><div style="font-size:60px;margin-bottom:16px;">▶</div><div style="font-size:24px;">点击开始观看</div><div style="font-size:15px;color:#888;margin-top:8px;">观看时可自由调整播放速度</div></div>';
     }, { once: true });
     return;
   }
@@ -790,8 +781,6 @@ function submitPostQuestionnaire() {
   const boredom = document.querySelector('input[name="boredomRating"]:checked');
   const impatience = document.querySelector('input[name="impatienceRating"]:checked');
   const seenBefore = document.querySelector('input[name="seenBefore"]:checked');
-  const guessPurpose = document.getElementById('guessPurpose').value.trim();
-
   if (!interest || !difficulty || comprehension === '' || !boredom || !impatience || !seenBefore) {
     alert('请完成所有题目后再提交。');
     return;
@@ -803,22 +792,8 @@ function submitPostQuestionnaire() {
     comprehension: parseInt(comprehension),
     boredom: parseInt(boredom.value),
     impatience: parseInt(impatience.value),
-    seenBefore: parseInt(seenBefore.value),
-    guessPurpose: guessPurpose || ''
+    seenBefore: parseInt(seenBefore.value)
   };
-
-  // 自动判断是否猜到实验目的
-  const purposeLower = guessPurpose.toLowerCase();
-  const guessKeywords = ['倍速', '加速', '延迟满足', '等待', '耐心', '速度', '快进', '播放速度',
-    'speed', 'delay', 'patience', 'gratification', 'waiting', 'impulse'];
-  let guessed = false;
-  for (let kw of guessKeywords) {
-    if (purposeLower.includes(kw)) {
-      guessed = true;
-      break;
-    }
-  }
-  participantData.postQuestionnaire.guessedPurpose = guessed;
 
   goToSection(7);
 }
@@ -827,7 +802,6 @@ function submitPostQuestionnaire() {
 // DATA SUBMISSION & FINALIZATION
 // ============================================================
 async function finalizeExperiment() {
-  document.getElementById('finalParticipantId').textContent = participantData.participantId;
   document.getElementById('experimentIdDisplay').textContent = '实验ID: ' + participantData.participantId;
 
   const statusBadge = document.getElementById('statusBadge');
@@ -895,8 +869,6 @@ async function finalizeExperiment() {
           boredom: participantData.postQuestionnaire.boredom || null,
           impatience: participantData.postQuestionnaire.impatience || null,
           seen_before: participantData.postQuestionnaire.seenBefore || null,
-          guess_purpose: participantData.postQuestionnaire.guessPurpose || null,
-          guessed_purpose_flag: participantData.postQuestionnaire.guessedPurpose || false,
 
           // Raw logs
           speed_log: participantData.speedLog || [],
