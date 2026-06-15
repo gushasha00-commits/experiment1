@@ -243,7 +243,6 @@ function initSupabase() {
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
     <div class="video-time-display">
       <span>已观看: <strong id="watchedTime">00:00</strong></span>
-      <span>总时长: <strong id="totalTime">00:00</strong></span>
       <span>当前倍速: <strong id="currentSpeedDisplay" style="color:#5b8def;">1.0x</strong></span>
     </div>
   </div>
@@ -335,10 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // 初始化 Supabase
   initSupabase();
 
-  // 设置视频源
-  var videoEl = document.getElementById('mainVideo');
-  videoEl.src = VIDEO_URL;
-  videoEl.load();
+  // 预设置视频源（进入视频页时会重新 load）
 
   // 知情同意勾选
   document.getElementById('consentCheck').addEventListener('change', function() {
@@ -440,6 +436,12 @@ function goToSection(n) {
   if (sec) sec.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  if (n === 5) {
+    // 进入视频页面时重新加载视频（确保可见状态下正确加载）
+    var v = document.getElementById('mainVideo');
+    if (v && !v.src) v.src = VIDEO_URL;
+    v.load();
+  }
   if (n === 4) startRestTimer();
   if (n === 7) finalizeExperiment();
 }
