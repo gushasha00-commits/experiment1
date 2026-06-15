@@ -4,20 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>视频观看实验</title>
-<!-- Supabase JS SDK - 加载失败时自动切换备用CDN -->
-<script>
-(function(){
-  var s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-  s.onerror = function() {
-    // jsdelivr 不可用时切换到 unpkg
-    var fallback = document.createElement('script');
-    fallback.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-    document.head.appendChild(fallback);
-  };
-  document.head.appendChild(s);
-})();
-</script>
+<!-- 数据直接通过 fetch 提交到 Supabase，无需外部 JS 库 -->
 <style>
 /* ============================================================
    CONFIGURATION - 请修改以下配置
@@ -151,29 +138,8 @@ const VIDEO_URL = 'https://pub-852cae5492f04e0caefed29c0a231114.r2.dev/video.mp4
 // ║  配置结束                                                     ║
 // ╚══════════════════════════════════════════════════════════════╝
 
-let supabase = null;
-
-// 初始化 Supabase 客户端
-function initSupabase() {
-  if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_ANON_KEY') {
-    console.warn('Supabase 未配置，数据将仅保存在本地。');
-    return null;
-  }
-  try {
-    // 使用全局 supabase 对象（CDN 加载）
-    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      console.log('Supabase 已连接');
-      return supabase;
-    } else {
-      console.warn('Supabase JS 库加载失败');
-      return null;
-    }
-  } catch(e) {
-    console.error('Supabase 初始化失败:', e);
-    return null;
-  }
-}
+// 数据提交地址（Supabase REST API，无需外部库）
+var SUPABASE_TABLE_URL = SUPABASE_URL + '/rest/v1/participants';
 </script>
 
 <!-- Section 1: Consent -->
@@ -331,9 +297,6 @@ let syncSuccess = false;
 // SUPABASE INITIALIZATION
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
-  // 初始化 Supabase
-  initSupabase();
-
   // 预设置视频源（进入视频页时会重新 load）
 
   // 知情同意勾选
@@ -817,93 +780,86 @@ async function finalizeExperiment() {
 
   // 始终保存到 localStorage 作为备份
   try {
-    const key = 'exp1_' + participantData.participantId;
+    var key = 'exp1_' + participantData.participantId;
     localStorage.setItem(key, JSON.stringify(participantData));
-    let allData = JSON.parse(localStorage.getItem('exp1_allData') || '[]');
+    var allData = JSON.parse(localStorage.getItem('exp1_allData') || '[]');
     allData.push(participantData);
     localStorage.setItem('exp1_allData', JSON.stringify(allData));
   } catch(e) {
     console.warn('localStorage backup failed:', e);
   }
 
-  // 尝试提交到 Supabase
-  if (supabase) {
-    statusBadge.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;"></span> 正在上传数据...';
-    statusBadge.className = 'status-badge';
+  // 直接通过 fetch 提交到 Supabase REST API（不依赖外部 JS 库）
+  statusBadge.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;"></span> 正在上传数据...';
+  statusBadge.className = 'status-badge';
 
-    try {
-      const { data, error } = await supabase
-        .from('participants')
-        .insert([{
-          participant_id: participantData.participantId,
-          experiment_version: participantData.experimentVersion,
-          timestamp: participantData.timestamp,
+  try {
+    var body = {
+      participant_id: participantData.participantId,
+      experiment_version: participantData.experimentVersion,
+      timestamp: participantData.timestamp,
+      age: participantData.demographics.age || null,
+      gender: participantData.demographics.gender || null,
+      grade: participantData.demographics.grade || null,
+      major: participantData.demographics.major || null,
+      daily_video_hours: participantData.demographics.dailyVideoHours || null,
+      daily_speed_freq: participantData.demographics.dailySpeedFreq || null,
+      dgi_total: participantData.dgiScores.total || null,
+      dgi_food: participantData.dgiScores.food || null,
+      dgi_physical: participantData.dgiScores.physical || null,
+      dgi_social: participantData.dgiScores.social || null,
+      dgi_money: participantData.dgiScores.money || null,
+      dgi_achievement: participantData.dgiScores.achievement || null,
+      dgi_responses: participantData.dgi.responses || {},
+      dgi_lie_scores: participantData.dgi.lieScores || {},
+      dgi_flags: participantData.dgiFlags || {},
+      avg_speed: participantData.speedMetrics ? participantData.speedMetrics.avgSpeed : null,
+      final_speed: participantData.speedMetrics ? participantData.speedMetrics.finalSpeed : null,
+      max_speed: participantData.speedMetrics ? participantData.speedMetrics.maxSpeed : null,
+      first_accel_time: participantData.speedMetrics ? participantData.speedMetrics.firstAccelTime : null,
+      adjustment_count: participantData.speedMetrics ? participantData.speedMetrics.adjustmentCount : null,
+      high_speed_ratio: participantData.speedMetrics ? participantData.speedMetrics.highSpeedRatio : null,
+      total_watch_time: participantData.speedMetrics ? participantData.speedMetrics.totalWatchTime : null,
+      watch_completion_rate: participantData.speedMetrics ? participantData.speedMetrics.watchCompletionRate : null,
+      interest: participantData.postQuestionnaire.interest || null,
+      difficulty: participantData.postQuestionnaire.difficulty || null,
+      comprehension: participantData.postQuestionnaire.comprehension || null,
+      boredom: participantData.postQuestionnaire.boredom || null,
+      impatience: participantData.postQuestionnaire.impatience || null,
+      seen_before: participantData.postQuestionnaire.seenBefore || null,
+      speed_log: participantData.speedLog || [],
+      raw_data: participantData,
+      browser_info: participantData.browserInfo || {}
+    };
 
-          // Demographics
-          age: participantData.demographics.age || null,
-          gender: participantData.demographics.gender || null,
-          grade: participantData.demographics.grade || null,
-          major: participantData.demographics.major || null,
-          daily_video_hours: participantData.demographics.dailyVideoHours || null,
-          daily_speed_freq: participantData.demographics.dailySpeedFreq || null,
+    var response = await fetch(SUPABASE_TABLE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(body)
+    });
 
-          // DGI Scores
-          dgi_total: participantData.dgiScores.total || null,
-          dgi_food: participantData.dgiScores.food || null,
-          dgi_physical: participantData.dgiScores.physical || null,
-          dgi_social: participantData.dgiScores.social || null,
-          dgi_money: participantData.dgiScores.money || null,
-          dgi_achievement: participantData.dgiScores.achievement || null,
-
-          // DGI raw responses + lie scores
-          dgi_responses: participantData.dgi.responses || {},
-          dgi_lie_scores: participantData.dgi.lieScores || {},
-          dgi_flags: participantData.dgiFlags || {},
-
-          // Speed metrics
-          avg_speed: participantData.speedMetrics?.avgSpeed || null,
-          final_speed: participantData.speedMetrics?.finalSpeed || null,
-          max_speed: participantData.speedMetrics?.maxSpeed || null,
-          first_accel_time: participantData.speedMetrics?.firstAccelTime || null,
-          adjustment_count: participantData.speedMetrics?.adjustmentCount || null,
-          high_speed_ratio: participantData.speedMetrics?.highSpeedRatio || null,
-          total_watch_time: participantData.speedMetrics?.totalWatchTime || null,
-          watch_completion_rate: participantData.speedMetrics?.watchCompletionRate || null,
-
-          // Post questionnaire
-          interest: participantData.postQuestionnaire.interest || null,
-          difficulty: participantData.postQuestionnaire.difficulty || null,
-          comprehension: participantData.postQuestionnaire.comprehension || null,
-          boredom: participantData.postQuestionnaire.boredom || null,
-          impatience: participantData.postQuestionnaire.impatience || null,
-          seen_before: participantData.postQuestionnaire.seenBefore || null,
-
-          // Raw logs
-          speed_log: participantData.speedLog || [],
-          raw_data: participantData,
-          browser_info: participantData.browserInfo || {}
-        }]);
-
-      if (error) {
-        console.error('Supabase 提交失败:', error);
-        statusBadge.innerHTML = '⚠️ 云端上传失败，数据已保存在本地';
-        statusBadge.className = 'status-badge local';
-        syncSuccess = false;
-      } else {
-        console.log('数据已成功提交到 Supabase:', data);
-        statusBadge.innerHTML = '✅ 数据已成功上传至云端';
-        statusBadge.className = 'status-badge synced';
-        syncSuccess = true;
-      }
-    } catch(e) {
-      console.error('Supabase 提交异常:', e);
+    if (response.ok) {
+      console.log('数据已成功提交到 Supabase');
+      statusBadge.innerHTML = '✅ 数据已成功上传至云端';
+      statusBadge.className = 'status-badge synced';
+      syncSuccess = true;
+    } else {
+      var errText = await response.text();
+      console.error('Supabase 提交失败:', response.status, errText);
       statusBadge.innerHTML = '⚠️ 云端上传失败，数据已保存在本地';
       statusBadge.className = 'status-badge local';
       syncSuccess = false;
     }
-  } else {
-    statusBadge.innerHTML = '💾 数据已保存在本地（Supabase 未配置）';
+  } catch(e) {
+    console.error('Supabase 提交异常:', e);
+    statusBadge.innerHTML = '⚠️ 云端上传失败，数据已保存在本地';
     statusBadge.className = 'status-badge local';
+    syncSuccess = false;
   }
 }
 
